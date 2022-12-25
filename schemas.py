@@ -5,3 +5,6 @@ class User(BaseModel):
     Name: str
     Age: int
     Dep: str
+
+class UpdateUser(User):
+    pass
