@@ -1,35 +1,61 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+import json
+#----------------------------------------------------
 from models import Student
 from schemas import User
-import json
+from logics import password_check
+
+
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# @app.post("/create")
-# def createUser(name, age, dep,ids):
-#     Student(u_id = ids, Name = name, Age = age, Dep = dep).save()
-#     return {"Message ": f"{name} create successfully"}
-
-@app.get("/alluser", tags=["User Crud"])
+@app.get("/all_user", tags=["User"])
 def getAllUser():
     return json.loads(Student.objects.to_json())
 
-@app.get("/getuser/{id}", tags=["User Crud"])
+@app.get("/get_user/{id}", tags=["User"])
 def getUser(id: int):
     return json.loads(Student.objects(u_id = id).to_json())
 
-@app.post("/create_user", tags=["User Crud"])
+@app.post("/create_user", tags=["User"])
 def create_user(usr: User):
-    Student(u_id = usr.u_id, Name = usr.Name, Age = usr.Age, Dep = usr.Dep).save()
-    return {"Message ": f"{usr.Name} create successfully"}
+    now = datetime.now()
+    if password_check(usr.password, usr.crm_password):
+        if Student.objects(Mail = usr.Mail):
+            print("User already found...!")
+            return {"Message ": f"{usr.First_Name} {usr.Last_Name} User already found...!"}
+        else:
+            print("not found...!")
+            Student(
+                First_Name = usr.First_Name, 
+                Last_Name = usr.Last_Name,
+                Mail = usr.Mail,
+                password = usr.password,
+                crm_password = usr.crm_password,
+                Date = now.strftime("%d-%m-%Y, %H:%M:%S")
+                ).save()
 
-@app.delete("/delete_user/{id}", tags=["User Crud"])
+            return {"Message ": f"{usr.First_Name} {usr.Last_Name} create successfully"} 
+
+    else:
+        return {"Message ": "Password miss-match"}
+
+@app.delete("/delete_user/{id}", tags=["User"])
 def create_user(id):
     Student.objects(u_id = id).delete()
     return {"Message ": f"{id} delete successfully"}
 
-@app.patch("/update_user", tags=["User Crud"])
-def update_user(name: str, age: int):
+@app.patch("/update_user", tags=["User"])
+def update_user(name: str, age: int): 
     Student.objects.get(Name=name).update(Age=age)
     return json.loads(Student.objects.get(Name=name).to_json())

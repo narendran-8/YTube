@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 
 class User(BaseModel):
-    u_id: int
-    Name: str
-    Age: int
-    Dep: str
+    First_Name: str
+    Last_Name: str
+    Mail: str
+    password: str
+    crm_password: str
 
 class UpdateUser(User):
     pass
