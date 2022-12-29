@@ -7,5 +7,8 @@ class User(BaseModel):
     password: str
     crm_password: str
 
-class UpdateUser(User):
-    pass
+class UpdateUser(BaseModel):
+    First_Name: str
+    Last_Name: str
+    password: str
+    crm_password: str

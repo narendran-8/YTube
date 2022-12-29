@@ -1,10 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import json
 #----------------------------------------------------
 from models import Student
-from schemas import User
+from schemas import User, UpdateUser
 from logics import password_check
 
 
@@ -23,9 +23,12 @@ app.add_middleware(
 def getAllUser():
     return json.loads(Student.objects.to_json())
 
-@app.get("/get_user/{id}", tags=["User"])
-def getUser(id: int):
-    return json.loads(Student.objects(u_id = id).to_json())
+@app.get("/get_user/{mail}", tags=["User"])
+def getUser(mail: str):
+    if Student.objects(Mail = mail):
+        return json.loads(Student.objects(Mail = mail).to_json())
+    else:
+        return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
 
 @app.post("/create_user", tags=["User"])
 def create_user(usr: User):
@@ -50,12 +53,23 @@ def create_user(usr: User):
     else:
         return {"Message ": "Password miss-match"}
 
-@app.delete("/delete_user/{id}", tags=["User"])
-def create_user(id):
-    Student.objects(u_id = id).delete()
-    return {"Message ": f"{id} delete successfully"}
+@app.delete("/delete_user/{mail}", tags=["User"])
+def create_user(mail):
+    if Student.objects(Mail = mail):
+        Student.objects(Mail = mail).delete()
+        return {"Message ": f"{mail} delete successfully"}
+    else:
+        return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
 
-@app.patch("/update_user", tags=["User"])
-def update_user(name: str, age: int): 
-    Student.objects.get(Name=name).update(Age=age)
-    return json.loads(Student.objects.get(Name=name).to_json())
+@app.put("/update_user", tags=["User"])
+def update_user(mail: str, u_update: UpdateUser):
+    try: 
+        Student.objects.get(Mail=mail).update(
+            First_Name = u_update.First_Name, 
+            Last_Name = u_update.Last_Name,
+            password = u_update.password,
+            crm_password = u_update.crm_password,
+        )
+    except Exception:
+        return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
+    return {"Message ": f"{u_update.First_Name} {u_update.Last_Name} update successfully"}
