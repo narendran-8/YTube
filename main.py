@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from datetime import datetime
 import json
 #----------------------------------------------------
 from models import Student
 from schemas import User, UpdateUser
-from logics import password_check
+from logics import password_check, hash_password
 
 
 
@@ -32,7 +31,6 @@ def getUser(mail: str):
 
 @app.post("/create_user", tags=["User"])
 def create_user(usr: User):
-    now = datetime.now()
     if password_check(usr.password, usr.crm_password):
         if Student.objects(Mail = usr.Mail):
             print("User already found...!")
@@ -43,9 +41,8 @@ def create_user(usr: User):
                 First_Name = usr.First_Name, 
                 Last_Name = usr.Last_Name,
                 Mail = usr.Mail,
-                password = usr.password,
-                crm_password = usr.crm_password,
-                Date = now.strftime("%d-%m-%Y, %H:%M:%S")
+                password = hash_password(usr.password),
+                crm_password = hash_password(usr.crm_password),
                 ).save()
 
             return {"Message ": f"{usr.First_Name} {usr.Last_Name} create successfully"} 
