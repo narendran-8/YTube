@@ -3,3 +3,4 @@ mongoengine
 pydantic
 passlib[bcrypt]
 pytube
+youtube_dl

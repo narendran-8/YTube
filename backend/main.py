@@ -33,22 +33,22 @@ def getUser(mail: str):
         return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
 
 @app.post("/create_user", tags=["User"])
-def create_user(usr: User):
-    if password_check(usr.password, usr.crm_password):
-        if Student.objects(Mail = usr.Mail):
+def create_user(user: User):
+    if password_check(user.password, user.crm_password):
+        if Student.objects(Mail = user.Mail):
             print("User already found...!")
-            return {"Message ": f"{usr.First_Name} {usr.Last_Name} User already found...!"}
+            return {"Message ": f"{user.First_Name} {user.Last_Name} User already found...!"}
         else:
             print("not found...!")
             Student(
-                First_Name = usr.First_Name, 
-                Last_Name = usr.Last_Name,
-                Mail = usr.Mail,
-                password = hash_password(usr.password),
-                crm_password = hash_password(usr.crm_password),
+                First_Name = user.First_Name, 
+                Last_Name = user.Last_Name,
+                Mail = user.Mail,
+                password = hash_password(user.password),
+                crm_password = hash_password(user.crm_password),
                 ).save()
 
-            return {"Message ": f"{usr.First_Name} {usr.Last_Name} create successfully"} 
+            return {"Message ": f"{user.First_Name} {user.Last_Name} create successfully"} 
 
     else:
         return {"Message ": "Password miss-match"}
