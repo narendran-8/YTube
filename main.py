@@ -1,12 +1,15 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import json
 #----------------------------------------------------
 from models import Student
 from schemas import User, UpdateUser
 from logics import password_check, hash_password
+from download import YTDownload
 
-
+oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
@@ -70,3 +73,20 @@ def update_user(mail: str, u_update: UpdateUser):
     except Exception:
         return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
     return {"Message ": f"{u_update.First_Name} {u_update.Last_Name} update successfully"}
+
+@app.post("/token", tags=["login"])
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    username = form_data.username
+    password = form_data.password
+    
+    print(username, password)
+
+@app.get("/", tags=["login"])
+def index(token: str = Depends(oauth2_schema)):
+    return {"message":"hello world!!!"}
+
+
+@app.get("/down")
+def downLoad():
+    #YTDownload("https://www.youtube.com/shorts/OqCsjvY4P8Q").Video_download()
+    return FileResponse(YTDownload("https://www.youtube.com/shorts/OqCsjvY4P8Q").Video_download(), media_type='text/mp4')

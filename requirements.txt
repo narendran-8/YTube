@@ -1,4 +1,5 @@
 fastapi[all]
 mongoengine
 pydantic
-passlib[bcrypt]  
+passlib[bcrypt]
+pytube
