@@ -31,8 +31,7 @@ def yt_link_gen(video_url):
 
     formats =[]
     single_data = {}
-    itemCollection = len(result["formats"])
-    for items in range(itemCollection):
+    for items in range(len(result["formats"])):
 
         single_data["filesize"] = result["formats"][items]["filesize"]
         single_data["resolution"] = result["formats"][items]["format_note"]
@@ -43,34 +42,17 @@ def yt_link_gen(video_url):
 
         formats.append(single_data)
      
-
-
     payload = {}
 
-    payload["id"] = result["id"]
-    payload["title"] = result["title"]
-    payload["formats"] = formats
-    payload["description"] = result["description"]
-    payload["upload_date"] = result["upload_date"]
-    payload["uploader"] = result["uploader"]
-    payload["uploader_id"] = result["uploader_id"]
-    payload["uploader_url"] = result["uploader_url"]
-    payload["channel_id"] = result["channel_id"]
-    payload["channel_url"] = result["channel_url"]
-    payload["duration"] = result["duration"]
-    payload["view_count"] = result["view_count"]
-    payload["average_rating"] = result["average_rating"]
-    payload["age_limit"] = result["age_limit"]
-    payload["webpage_url"] = result["webpage_url"]
-    payload["categories"] = result["categories"]
-    payload["is_live"] = result["is_live"]
-    payload["subtitles"] = result["subtitles"]
-    payload["channel"] = result["channel"]
-    payload["playlist"] = result["playlist"]
-    payload["playlist_index"] = result["playlist_index"]
-    payload["thumbnail"] = result["thumbnail"]
-    payload["display_id"] = result["display_id"]
+    video_attribute = ["id","title","formats","description","upload_date","uploader","uploader_id",
+    "uploader_url","channel_id","channel_url","duration","view_count","average_rating","age_limit","webpage_url",
+    "categories","is_live", "subtitles", "channel", "playlist","playlist_index","thumbnail","display_id"]
 
+    for items in video_attribute:
+        if items =="formats":
+            payload["formats"] = formats
+            continue  
+        payload[items] = result[items]
 
     result = json.dumps(payload, ensure_ascii=False).encode('utf8')
     return json.loads(result)
