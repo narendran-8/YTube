@@ -5,8 +5,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import json
 #----------------------------------------------------
 from models import Student
-from schemas import User, UpdateUser
-from logics import password_check, hash_password
+from schemas import User, UpdateUser, UrlBody
+from logics import password_check, hash_password, yt_link_gen
 from download import YTDownload
 
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
@@ -86,7 +86,6 @@ def index(token: str = Depends(oauth2_schema)):
     return {"message":"hello world!!!"}
 
 
-@app.get("/down")
-def downLoad():
-    #YTDownload("https://www.youtube.com/shorts/OqCsjvY4P8Q").Video_download()
-    return FileResponse(YTDownload("https://www.youtube.com/shorts/OqCsjvY4P8Q").Video_download(), media_type='text/mp4')
+@app.post("/down")
+def downLoad(url: UrlBody):
+    return yt_link_gen(url.Source_url)

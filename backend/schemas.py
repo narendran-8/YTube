@@ -12,3 +12,6 @@ class UpdateUser(BaseModel):
     Last_Name: str
     password: str
     crm_password: str
+
+class UrlBody(BaseModel):
+    Source_url: str

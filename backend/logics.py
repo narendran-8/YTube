@@ -20,18 +20,15 @@ def hash_password(password):
 
 #------------------------------------------------
 # youtube link generate
-def yt_link_gen():
+def yt_link_gen(video_url):
     ydl = youtube_dl.YoutubeDL({'outtmpl': '%(id)s.%(ext)s'})
 
     with ydl:
         result = ydl.extract_info(
-            'https://www.youtube.com/watch?v=Zs96fOzaesE',
+            video_url,
             download=False 
         )
 
-
-
-  
     formats =[]
     single_data = {}
     itemCollection = len(result["formats"])
@@ -75,6 +72,7 @@ def yt_link_gen():
     payload["display_id"] = result["display_id"]
 
 
-    print(json.dumps(payload))
+    result = json.dumps(payload, ensure_ascii=False).encode('utf8')
+    return json.loads(result)
 
-yt_link_gen()
+
