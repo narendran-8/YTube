@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ByteSize
 
 class User(BaseModel):
     First_Name: str
