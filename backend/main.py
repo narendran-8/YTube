@@ -33,7 +33,7 @@ def getUser(mail: str):
         return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="No user found...!")
 
 @app.post("/create_user", tags=["User"])
-def create_user(user: User, my_file: UploadFile = File(...)):
+def create_user(user: User):
     if password_check(user.password, user.crm_password):
         if Student.objects(Mail = user.Mail):
             print("User already found...!")
@@ -41,7 +41,6 @@ def create_user(user: User, my_file: UploadFile = File(...)):
         else:
             print("not found...!")
             Student(
-                Profile_pic = my_file.filename,
                 First_Name = user.First_Name, 
                 Last_Name = user.Last_Name,
                 Mail = user.Mail,
@@ -95,7 +94,7 @@ def downLoad(url: UrlBody):
 @app.post("/image_upload")
 def image_upload(my_file: UploadFile = File(...)):
     ImageStore(
-       ImageName = my_file.filename ,
+       ImageName = my_file.filename,
         SaveImage = my_file.file
     ).save()
     return {"File_name": my_file.filename, "File":my_file.file, "message":"Store successfully"}
